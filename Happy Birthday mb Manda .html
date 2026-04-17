@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday </title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(to bottom, #ffe4ec, #e0f7fa);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #ff8fab;
+    }
+
+    #counter {
+      font-size: 20px;
+      color: #6a4c93;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 80vh;
+      overflow: hidden;
+    }
+
+    .balloon {
+      width: 60px;
+      height: 80px;
+      border-radius: 50%;
+      position: absolute;
+      cursor: pointer;
+
+      animation: floatUp linear infinite;
+      transition: transform 0.2s;
+    }
+
+    .balloon:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-20px) translateX(5px); }
+      50% { transform: translateY(-40px) translateX(-5px); }
+      75% { transform: translateY(-60px) translateX(3px); }
+      100% { transform: translateY(-80px) translateX(0); }
+    }
+
+    /*  LAYER BARU (FULL SCREEN) */
+    #finalScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+
+      background: linear-gradient(to bottom, #ffe4ec, #e0f7fa);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+    }
+
+    #finalScreen.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #finalScreen h2 {
+      color: #ff6b81;
+      font-size: 32px;
+      animation: popIn 1s ease;
+    }
+
+    #finalScreen p {
+      color: #555;
+      font-size: 18px;
+      max-width: 600px;
+      margin: 10px;
+      animation: fadeIn 2s ease;
+    }
+
+    #photo {
+      width: 230px;
+      border-radius: 20px;
+      margin-top: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      animation: zoomIn 1.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes zoomIn {
+      from {transform: scale(0.7); opacity: 0;}
+      to {transform: scale(1); opacity: 1;}
+    }
+
+    @keyframes popIn {
+      0% {transform: scale(0.5); opacity: 0;}
+      100% {transform: scale(1); opacity: 1;}
+    }
+
+  </style>
+</head>
+
+<body>
+
+<h1>Tap layar, pecahkan balon 24x! </h1>
+<div id="counter">Balon pecah: 0 / 24</div>
+
+<div id="gameArea"></div>
+
+<!--  LAYER BARU -->
+<div id="finalScreen">
+  <h2>HAPPY BIRTHDAY MY BELOVED SISTER </h2>
+  <p>
+    Semoga semua hal yang diinginkan bisa tercapai ya.<br>
+    Semoga selalu dikelilingi orang-orang dan hal-hal baik terus dimanapun dan kapanpun.<br>
+    Proud of you 
+  </p>
+  <img id="photo" src="https://i.imgur.com/EOEtByO.jpeg" alt="Foto">
+</div>
+
+<script>
+  const gameArea = document.getElementById("gameArea");
+  const counterText = document.getElementById("counter");
+  const finalScreen = document.getElementById("finalScreen");
+
+  let popped = 0;
+  const target = 24;
+
+  function randomPastel() {
+    const colors = ["#ffd6e0", "#caffbf", "#bde0fe", "#fff1b6", "#e0c3fc"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  function createBalloon(x, y) {
+    const balloon = document.createElement("div");
+    balloon.classList.add("balloon");
+
+    balloon.style.left = x + "px";
+    balloon.style.top = y + "px";
+    balloon.style.background = randomPastel();
+
+    balloon.style.animationDuration = (4 + Math.random() * 3) + "s";
+    balloon.style.animationDelay = Math.random() * 2 + "s";
+
+    balloon.addEventListener("click", (e) => {
+      e.stopPropagation();
+      balloon.remove();
+
+      popped++;
+      counterText.innerText = `Balon pecah: ${popped} / ${target}`;
+
+      if (popped === target) {
+        showFinalScreen();
+      }
+    });
+
+    gameArea.appendChild(balloon);
+  }
+
+  function showFinalScreen() {
+    // sembunyikan game
+    document.getElementById("gameArea").style.display = "none";
+    document.querySelector("h1").style.display = "none";
+    counterText.style.display = "none";
+
+    // tampilkan layer baru
+    setTimeout(() => {
+      finalScreen.classList.add("show");
+    }, 300);
+  }
+
+  gameArea.addEventListener("click", (e) => {
+    const rect = gameArea.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    createBalloon(x - 30, y - 40);
+  });
+</script>
+
+</body>
+</html>
